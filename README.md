@@ -1,2 +1,0 @@
-# redoclyAPIDocs
-Document testing
