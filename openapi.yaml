@@ -1,713 +1,634 @@
 openapi: 3.1.0
 info:
-  title: Redocly Museum API
-  description: Imaginary, but delightful Museum API for interacting with museum services and information. Built with love by Redocly.
-  version: 1.1.1
-  termsOfService: 'https://redocly.com/subscription-agreement/'
+  title: OnlyFans API Dashboard External API
+  description: External API for accessing OnlyFans model data, analytics, and management features through a secure multi-tenant platform.
+  version: 1.0.0
+  termsOfService: 'https://yourdomain.com/terms'
   contact:
-    email: team@redocly.com
-    url: "https://redocly.com/docs/cli/"
+    email: support@yourdomain.com
+    url: "https://yourdomain.com/support"
   license:
-    name: MIT
-    url: "https://opensource.org/license/mit/"
+    name: Proprietary
+    url: "https://yourdomain.com/license"
 servers:
-  - url: "https://api.fake-museum-example.com/v1.1"
+  - url: "https://api.yourdomain.com/api/v1/onlyfans"
+    description: Production server
+  - url: "http://localhost:3000/api/v1/onlyfans"
+    description: Development server
+
 paths:
-  /museum-hours:
+  /organizations/{orgId}/models:
     get:
-      summary: Get museum hours
-      description: Get upcoming museum operating hours.
-      operationId: getMuseumHours
+      summary: Get organization models
+      description: Retrieve all models associated with a specific organization.
+      operationId: getOrganizationModels
       tags:
-        - Operations
+        - Organizations
       parameters:
-        - $ref: "#/components/parameters/StartDate"
-        - $ref: "#/components/parameters/PaginationPage"
-        - $ref: "#/components/parameters/PaginationLimit"
+        - $ref: "#/components/parameters/OrgId"
       responses:
         "200":
-          description: Success.
+          description: Success
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetMuseumHoursResponse"
+                $ref: "#/components/schemas/ApiResponse"
               examples:
-                default_example:
-                  $ref: "#/components/examples/GetMuseumHoursResponseExample"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "404":
-          $ref: '#/components/responses/NotFound'
-  /special-events:
-    post:
-      summary: Create special events
-      description: Creates a new special event for the museum.
-      operationId: createSpecialEvent
-      tags:
-        - Events
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateSpecialEventRequest"
-            examples:
-              default_example:
-                $ref: "#/components/examples/CreateSpecialEventRequestExample"
-      responses:
-        "201":
-          description: Created.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SpecialEventResponse"
-              examples:
-                default_example:
-                  $ref: "#/components/examples/CreateSpecialEventResponseExample"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "404":
-          $ref: '#/components/responses/NotFound'
-    get:
-      summary: List special events
-      description: Return a list of upcoming special events at the museum.
-      operationId: listSpecialEvents
-      tags:
-        - Events
-      parameters:
-        - $ref: "#/components/parameters/StartDate"
-        - $ref: "#/components/parameters/EndDate"
-        - $ref: "#/components/parameters/PaginationPage"
-        - $ref: "#/components/parameters/PaginationLimit"
-      responses:
-        "200":
-          description: Success.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListSpecialEventsResponse"
-              examples:
-                default_example:
-                  $ref: "#/components/examples/ListSpecialEventsResponseExample"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "404":
-          $ref: '#/components/responses/NotFound'
-  /special-events/{eventId}:
-    get:
-      summary: Get special event
-      description: Get details about a special event.
-      operationId: getSpecialEvent
-      tags:
-        - Events
-      parameters:
-        - $ref: "#/components/parameters/EventId"
-      responses:
-        "200":
-          description: Success.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SpecialEventResponse"
-              examples:
-                default_example:
-                  $ref: "#/components/examples/GetSpecialEventResponseExample"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "404":
-          $ref: '#/components/responses/NotFound'
-    patch:
-      summary: Update special event
-      description: Update the details of a special event.
-      operationId: updateSpecialEvent
-      tags:
-        - Events
-      parameters:
-        - $ref: "#/components/parameters/EventId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateSpecialEventRequest"
-            examples:
-              default_example:
-                $ref: "#/components/examples/UpdateSpecialEventRequestExample"
-      responses:
-        "200":
-          description: Success.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SpecialEventResponse"
-              examples:
-                default_example:
-                  $ref: "#/components/examples/UpdateSpecialEventResponseExample"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "404":
-          $ref: '#/components/responses/NotFound'
-    delete:
-      summary: Delete special event
-      description: Delete a special event from the collection. Allows museum to cancel planned events.
-      operationId: deleteSpecialEvent
-      tags:
-        - Events
-      parameters:
-        - $ref: "#/components/parameters/EventId"
-      responses:
-        "204":
-          description: Success - no content.
+                success:
+                  $ref: "#/components/examples/GetOrganizationModelsResponseExample"
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
           $ref: '#/components/responses/Unauthorized'
-        "404":
-          $ref: '#/components/responses/NotFound'
-  /tickets:
+        "500":
+          $ref: '#/components/responses/InternalServerError'
     post:
-      summary: Buy museum tickets
-      description: Purchase museum tickets for general entry or special events.
-      operationId: buyMuseumTickets
+      summary: Process organization models
+      description: Process or update models for a specific organization.
+      operationId: postOrganizationModels
       tags:
-        - Tickets
+        - Organizations
+      parameters:
+        - $ref: "#/components/parameters/OrgId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/BuyMuseumTicketsRequest"
-            examples:
-              general_entry:
-                $ref: "#/components/examples/BuyGeneralTicketsRequestExample"
-              event_entry:
-                $ref: "#/components/examples/BuyEventTicketsRequestExample"
+              type: object
+              description: Request payload for processing models
       responses:
-        "201":
-          description: Created.
+        "200":
+          description: Success
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BuyMuseumTicketsResponse"
-              examples:
-                general_entry:
-                  $ref: "#/components/examples/BuyGeneralTicketsResponseExample"
-                event_entry:
-                  $ref: "#/components/examples/BuyEventTicketsResponseExample"
+                $ref: "#/components/schemas/ApiResponse"
         "400":
           $ref: '#/components/responses/BadRequest'
-        "404":
-          $ref: '#/components/responses/NotFound'
-  /tickets/{ticketId}/qr:
-    get:
-      summary: Get ticket QR code
-      description: Return an image of your ticket with scannable QR code. Used for event entry.
-      operationId: getTicketCode
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/reconnect:
+    post:
+      summary: Reconnect model
+      description: Reconnect and refresh model data connection.
+      operationId: reconnectModel
       tags:
-        - Tickets
+        - Models
       parameters:
-        - $ref: "#/components/parameters/TicketId"
+        - $ref: "#/components/parameters/ModelId"
       responses:
         "200":
-          description: Scannable event ticket in image format.
+          description: Success
           content:
-            image/png:
+            application/json:
               schema:
-                $ref: "#/components/schemas/GetTicketCodeResponse"
+                $ref: "#/components/schemas/ApiResponse"
         "400":
           $ref: '#/components/responses/BadRequest'
-        "404":
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/users/me:
+    get:
+      summary: Get model details
+      description: Retrieve detailed information about a specific model.
+      operationId: getModelDetails
+      tags:
+        - Models
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/fans/info:
+    get:
+      summary: Get fan details
+      description: Retrieve detailed information about a specific fan.
+      operationId: getFanDetails
+      tags:
+        - Fans
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - name: user_id
+          in: query
+          required: true
+          description: Unique identifier for the fan/user
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/chats:
+    get:
+      summary: Get model chats
+      description: Retrieve chat conversations for a model with pagination.
+      operationId: getModelChats
+      tags:
+        - Chats
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - name: limit
+          in: query
+          description: Number of chats to retrieve (default 20)
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          description: Number of chats to skip (default 0)
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/chats/{chatId}/messages:
+    get:
+      summary: Get chat messages
+      description: Retrieve messages from a specific chat conversation.
+      operationId: getChatMessages
+      tags:
+        - Chats
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/ChatId"
+        - name: limit
+          in: query
+          description: Number of messages to retrieve (default 50)
+          schema:
+            type: integer
+            default: 50
+            maximum: 200
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/payouts/transactions:
+    get:
+      summary: Get payout transactions
+      description: Retrieve payout transaction history for a model.
+      operationId: getModelPayoutTransactions
+      tags:
+        - Payouts
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - name: limit
+          in: query
+          description: Number of transactions to retrieve (default 10)
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/payouts/statistics:
+    get:
+      summary: Get payout statistics
+      description: Retrieve payout statistics and analytics for a model within a date range.
+      operationId: getModelPayoutStats
+      tags:
+        - Payouts
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/payouts/requests/referral:
+    get:
+      summary: Get payout referral requests
+      description: Retrieve referral-based payout requests for a model.
+      operationId: getModelPayoutReferralRequests
+      tags:
+        - Payouts
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/statistics/balances:
+    get:
+      summary: Get payout balances
+      description: Retrieve current payout balances for a model.
+      operationId: getModelPayoutBalances
+      tags:
+        - Statistics
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/statistics/overview:
+    get:
+      summary: Get statistics overview
+      description: Retrieve comprehensive statistics overview for a model within a date range.
+      operationId: getModelStatsOverview
+      tags:
+        - Statistics
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/stats/reach:
+    get:
+      summary: Get reach statistics
+      description: Retrieve audience reach statistics for a model within a date range.
+      operationId: getModelReachStats
+      tags:
+        - Statistics
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/stats/reach/by-country:
+    get:
+      summary: Get reach statistics by country
+      description: Retrieve audience reach statistics broken down by country for a model within a date range.
+      operationId: getModelReachStatsByCountry
+      tags:
+        - Statistics
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/stats/fans:
+    get:
+      summary: Get fan statistics
+      description: Retrieve fan-related statistics for a model within a date range.
+      operationId: getModelFansStats
+      tags:
+        - Statistics
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/{modelId}/stats/fans/top:
+    get:
+      summary: Get top fans
+      description: Retrieve top fans statistics for a model within a date range.
+      operationId: getModelTopFans
+      tags:
+        - Statistics
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
 components:
   schemas:
-    TicketType:
-      description: Type of ticket being purchased. Use `general` for regular museum entry and `event` for tickets to special events.
-      type: string
-      enum:
-        - event
-        - general
-      example: event
-    Date:
-      type: string
-      format: date
-      example: '2023-10-29'
-    Email:
-      description: Email address for ticket purchaser.
-      type: string
-      format: email
-      example: museum-lover@example.com
-    Phone:
-      description: Phone number for the ticket purchaser (optional).
-      type: string
-      example: '+1(234)-567-8910'
-    BuyMuseumTicketsRequest:
-      description: Request payload used for purchasing museum tickets.
+    ApiResponse:
       type: object
       properties:
-        ticketType:
-          $ref: "#/components/schemas/TicketType"
-        eventId:
-          description: Unique identifier for a special event. Required if purchasing tickets for the museum's special events.
-          $ref: "#/components/schemas/EventId"
-        ticketDate:
-          description: Date that the ticket is valid for.
-          $ref: "#/components/schemas/Date"
-        email:
-          $ref: "#/components/schemas/Email"
-        phone:
-          $ref: "#/components/schemas/Phone"
-      required:
-        - ticketType
-        - ticketDate
-        - email
-    TicketMessage:
-      description: Confirmation message after a ticket purchase.
-      type: string
-      example: Museum general entry ticket purchased
-    TicketId:
-      description: Unique identifier for museum ticket. Generated when purchased.
-      type: string
-      format: uuid
-      example: a54a57ca-36f8-421b-a6b4-2e8f26858a4c
-    TicketConfirmation:
-      description: Unique confirmation code used to verify ticket purchase.
-      type: string
-      example: 'ticket-event-a98c8f-7eb12'
-    BuyMuseumTicketsResponse:
-      description: Details for a museum ticket after a successful purchase.
-      type: object
-      properties:
+        success:
+          type: boolean
+          description: Indicates if the request was successful
+          example: true
         message:
-          $ref: "#/components/schemas/TicketMessage"
-        eventName:
-          $ref: "#/components/schemas/EventName"
-        ticketId:
-          $ref: "#/components/schemas/TicketId"
-        ticketType:
-          $ref: "#/components/schemas/TicketType"
-        ticketDate:
-          description: Date the ticket is valid for.
-          $ref: "#/components/schemas/Date"
-        confirmationCode:
-          $ref: "#/components/schemas/TicketConfirmation"
+          type: string
+          description: Human-readable response message
+          example: "Organization models retrieved successfully"
+        data:
+          description: The actual response data
+        metadata:
+          type: object
+          properties:
+            organizationId:
+              type: string
+              description: Organization identifier
+              example: "org_12345"
+            apiKeyId:
+              type: string
+              description: API key identifier
+              example: "key_67890"
+            modelId:
+              type: string
+              description: Model identifier (when applicable)
+              example: "model_abc123"
+            responseTime:
+              type: number
+              description: Response time in milliseconds
+              example: 245
+          description: Additional metadata about the request
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 200
+        responseTime:
+          type: number
+          description: Response time in milliseconds
+          example: 245
       required:
+        - success
         - message
-        - ticketId
-        - ticketType
-        - ticketDate
-        - confirmationCode
-    GetTicketCodeResponse:
-      description: Image of a ticket with a QR code used for museum or event entry.
-      type: string
-      format: binary
-    GetMuseumHoursResponse:
-      description: List of museum operating hours for consecutive days.
-      type: array
-      items:
-        $ref: "#/components/schemas/MuseumDailyHours"
-    MuseumDailyHours:
-      description: Daily operating hours for the museum.
-      type: object
-      properties:
-        date:
-          description: Date the operating hours apply to.
-          $ref: "#/components/schemas/Date"
-          example: '2024-12-31'
-        timeOpen:
-          type: string
-          pattern: '^([01]\d|2[0-3]):?([0-5]\d)$'
-          description: Time the museum opens on a specific date. Uses 24 hour time format (`HH:mm`).
-          example: 09:00
-        timeClose:
-          description: Time the museum closes on a specific date. Uses 24 hour time format (`HH:mm`).
-          type: string
-          pattern: '^([01]\d|2[0-3]):?([0-5]\d)$'
-          example: 18:00
-      required:
-        - date
-        - timeOpen
-        - timeClose
-    EventId:
-      description: Identifier for a special event.
-      type: string
-      format: uuid
-      example: 3be6453c-03eb-4357-ae5a-984a0e574a54
-    EventName:
-      type: string
-      description: Name of the special event.
-      example: Pirate Coding Workshop
-    EventLocation:
-      type: string
-      description: Location where the special event is held.
-      example: Computer Room
-    EventDescription:
-      type: string
-      description: Description of the special event.
-      example: Captain Blackbeard shares his love of the C...language. And possibly Arrrrr (R lang).
-    EventDates:
-      type: array
-      items:
-        $ref: "#/components/schemas/Date"
-      description: List of planned dates for the special event.
-    EventPrice:
-      description: Price of a ticket for the special event.
-      type: number
-      format: float
-      example: 25
-    CreateSpecialEventRequest:
-      description: Request payload for creating new special events at the museum.
-      type: object
-      properties:
-        name:
-          $ref: "#/components/schemas/EventName"
-        location:
-          $ref: "#/components/schemas/EventLocation"
-        eventDescription:
-          $ref: "#/components/schemas/EventDescription"
-        dates:
-          $ref: "#/components/schemas/EventDates"
-        price:
-          $ref: "#/components/schemas/EventPrice"
-      required:
-        - name
-        - location
-        - eventDescription
-        - dates
-        - price
-    UpdateSpecialEventRequest:
-      description: Request payload for updating an existing special event. Only included fields are updated in the event.
-      type: object
-      properties:
-        name:
-          $ref: "#/components/schemas/EventName"
-        location:
-          $ref: "#/components/schemas/EventLocation"
-        eventDescription:
-          $ref: "#/components/schemas/EventDescription"
-        dates:
-          $ref: "#/components/schemas/EventDates"
-        price:
-          $ref: "#/components/schemas/EventPrice"
-    ListSpecialEventsResponse:
-      description: List of upcoming special events.
-      type: array
-      items:
-        $ref: "#/components/schemas/SpecialEventResponse"
-    SpecialEventResponse:
-      description: Information about a special event.
-      type: object
-      properties:
-        eventId:
-          $ref: "#/components/schemas/EventId"
-        name:
-          $ref: "#/components/schemas/EventName"
-        location:
-          $ref: "#/components/schemas/EventLocation"
-        eventDescription:
-          $ref: "#/components/schemas/EventDescription"
-        dates:
-          $ref: "#/components/schemas/EventDates"
-        price:
-          $ref: "#/components/schemas/EventPrice"
-      required:
-        - eventId
-        - name
-        - location
-        - eventDescription
-        - dates
-        - price
-    Error:
-      type: object
-      properties:
-        type:
-          type: string
-          example: object
-        title:
-          type: string
-          example: Validation failed
 
-  securitySchemes:
-    MuseumPlaceholderAuth:
-      type: http
-      scheme: basic
-  examples:
-    BuyGeneralTicketsRequestExample:
-      summary: General entry ticket
-      value:
-        ticketType: general
-        ticketDate: '2023-09-07'
-        email: todd@example.com
-    BuyEventTicketsRequestExample:
-      summary: Special event ticket
-      value:
-        ticketType: general
-        eventId: dad4bce8-f5cb-4078-a211-995864315e39
-        ticketDate: '2023-09-05'
-        email: todd@example.com
-    BuyGeneralTicketsResponseExample:
-      summary: General entry ticket
-      value:
-        message: Museum general entry ticket purchased
-        ticketId: 382c0820-0530-4f4b-99af-13811ad0f17a
-        ticketType: general
-        ticketDate: '2023-09-07'
-        confirmationCode: ticket-general-e5e5c6-dce78
-    BuyEventTicketsResponseExample:
-      summary: Special event ticket
-      value:
-        message: Museum special event ticket purchased
-        ticketId: b811f723-17b2-44f7-8952-24b03e43d8a9
-        eventName: Mermaid Treasure Identification and Analysis
-        ticketType: event
-        ticketDate: '2023-09-05'
-        confirmationCode: ticket-event-9c55eg-8v82a
-    CreateSpecialEventRequestExample:
-      summary: Create special event
-      value:
-        name: Mermaid Treasure Identification and Analysis
-        location: Under the seaaa 🦀 🎶 🌊.
-        eventDescription: Join us as we review and classify a rare collection of 20 thingamabobs, gadgets, gizmos, whoosits, and whatsits, kindly donated by Ariel.
-        dates:
-          - '2023-09-05'
-          - '2023-09-08'
-        price: 0
-    CreateSpecialEventResponseExample:
-      summary: Special event created
-      value:
-        eventId: dad4bce8-f5cb-4078-a211-995864315e39
-        name: Mermaid Treasure Identification and Analysis
-        location: Under the seaaa 🦀 🎶 🌊.
-        eventDescription: Join us as we review and classify a rare collection of 20 thingamabobs, gadgets, gizmos, whoosits, and whatsits, kindly donated by Ariel.
-        dates:
-          - '2023-09-05'
-          - '2023-09-08'
-        price: 30
-    GetSpecialEventResponseExample:
-      summary: Get special event
-      value:
-        eventId: 6744a0da-4121-49cd-8479-f8cc20526495
-        name: Time Traveler Tea Party
-        location: Temporal Tearoom
-        eventDescription: Sip tea with important historical figures.
-        dates:
-          - '2023-11-18'
-          - '2023-11-25'
-          - '2023-12-02'
-        price: 60
-    ListSpecialEventsResponseExample:
-      summary: List of special events
-      value:
-        - eventId: f3e0e76e-e4a8-466e-ab9c-ae36c15b8e97
-          name: Sasquatch Ballet
-          location: Seattle... probably
-          eventDescription: They're big, they're hairy, but they're also graceful. Come learn how the biggest feet can have the lightest touch.
-          dates:
-            - '2023-12-15'
-            - '2023-12-22'
-          price: 40
-        - eventId: 2f14374a-9c65-4ee5-94b7-fba66d893483
-          name: Solar Telescope Demonstration
-          location: Far from the sun.
-          eventDescription: Look at the sun without going blind!
-          dates:
-            - '2023-09-07'
-            - '2023-09-14'
-          price: 50
-        - eventId: 6aaa61ba-b2aa-4868-b803-603dbbf7bfdb
-          name: Cook like a Caveman
-          location: Fire Pit on East side
-          eventDescription: Learn to cook on an open flame.
-          dates:
-            - '2023-11-10'
-            - '2023-11-17'
-            - '2023-11-24'
-          price: 5
-        - eventId: 602b75e1-5696-4ab8-8c7a-f9e13580f910
-          name: Underwater Basket Weaving
-          location: Rec Center Pool next door.
-          eventDescription: Learn to weave baskets underwater.
-          dates:
-            - '2023-09-12'
-            - '2023-09-15'
-          price: 15
-        - eventId: dad4bce8-f5cb-4078-a211-995864315e39
-          name: Mermaid Treasure Identification and Analysis
-          location: Room Sea-12
-          eventDescription: Join us as we review and classify a rare collection of 20 thingamabobs, gadgets, gizmos, whoosits, and whatsits — kindly donated by Ariel.
-          dates:
-            - '2023-09-05'
-            - '2023-09-08'
-          price: 30
-        - eventId: 6744a0da-4121-49cd-8479-f8cc20526495
-          name: Time Traveler Tea Party
-          location: Temporal Tearoom
-          eventDescription: Sip tea with important historical figures.
-          dates:
-            - '2023-11-18'
-            - '2023-11-25'
-            - '2023-12-02'
-          price: 60
-        - eventId: 3be6453c-03eb-4357-ae5a-984a0e574a54
-          name: Pirate Coding Workshop
-          location: Computer Room
-          eventDescription: Captain Blackbeard shares his love of the C...language. And possibly Arrrrr (R lang).
-          dates:
-            - '2023-10-29'
-            - '2023-10-30'
-            - '2023-10-31'
-          price: 45
-        - eventId: 9d90d29a-2af5-4206-97d9-9ea9ceadcb78
-          name: Llama Street Art Through the Ages
-          location: Auditorium
-          eventDescription: Llama street art?! Alpaca my bags -- let's go!
-          dates:
-            - '2023-10-29'
-            - '2023-10-30'
-            - '2023-10-31'
-          price: 45
-        - eventId: a3c7b2c4-b5fb-4ef7-9322-00a919864957
-          name: The Great Parrot Debate
-          location: Outdoor Amphitheatre
-          eventDescription: See leading parrot minds discuss important geopolitical issues.
-          dates:
-            - '2023-11-03'
-            - '2023-11-10'
-          price: 35
-        - eventId: b92d46b7-4c5d-422b-87a5-287767e26f29
-          name: Eat a Bunch of Corn
-          location: Cafeteria
-          eventDescription: We accidentally bought too much corn. Please come eat it.
-          dates:
-            - '2023-11-10'
-            - '2023-11-17'
-            - '2023-11-24'
-          price: 5
-    UpdateSpecialEventRequestExample:
-      summary: Update special event request
-      value:
-        location: On the beach.
-        price: 15
-    UpdateSpecialEventResponseExample:
-      summary: Update special event
-      value:
-        eventId: dad4bce8-f5cb-4078-a211-995864315e39
-        name: Mermaid Treasure Identification and Analysis
-        location: On the beach.
-        eventDescription: Join us as we review and classify a rare collection of 20 thingamabobs, gadgets, gizmos, whoosits, and whatsits, kindly donated by Ariel.
-        dates:
-          - '2023-09-05'
-          - '2023-09-08'
-        price: 15
-    GetMuseumHoursResponseExample:
-      summary: Get hours response
-      value:
-        - date: "2023-09-11"
-          timeOpen: "09:00"
-          timeClose: "18:00"
-        - date: "2023-09-12"
-          timeOpen: "09:00"
-          timeClose: "18:00"
-        - date: "2023-09-13"
-          timeOpen: "09:00"
-          timeClose: "18:00"
-        - date: "2023-09-14"
-          timeOpen: "09:00"
-          timeClose: "18:00"
-        - date: "2023-09-15"
-          timeOpen: "10:00"
-          timeClose: "16:00"
-        - date: "2023-09-18"
-          timeOpen: "09:00"
-          timeClose: "18:00"
-        - date: "2023-09-19"
-          timeOpen: "09:00"
-          timeClose: "18:00"
-        - date: "2023-09-20"
-          timeOpen: "09:00"
-          timeClose: "18:00"
-        - date: "2023-09-21"
-          timeOpen: "09:00"
-          timeClose: "18:00"
-        - date: "2023-09-22"
-          timeOpen: "10:00"
-          timeClose: "16:00"
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "API key validation required"
+        error:
+          type: string
+          example: "UNAUTHORIZED"
+        statusCode:
+          type: integer
+          example: 401
+      required:
+        - success
+        - message
+        - error
+        - statusCode
+
   parameters:
-    PaginationPage:
-      name: page
-      in: query
-      description: Page number to retrieve.
-      schema:
-        type: integer
-        default: 1
-        example: 2
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of days per page.
-      schema:
-        type: integer
-        default: 10
-        maximum: 30
-        example: 15
-    EventId:
-      name: eventId
+    OrgId:
+      name: orgId
       in: path
-      description: Identifier for a special event.
       required: true
+      description: Unique identifier for the organization
       schema:
         type: string
-        format: uuid
-        example: dad4bce8-f5cb-4078-a211-995864315e39
+        example: "org_12345"
+
+    ModelId:
+      name: modelId
+      in: path
+      required: true
+      description: Unique identifier for the model
+      schema:
+        type: string
+        example: "model_abc123"
+
+    ChatId:
+      name: chatId
+      in: path
+      required: true
+      description: Unique identifier for the chat conversation
+      schema:
+        type: string
+        example: "chat_xyz789"
+
     StartDate:
       name: startDate
       in: query
-      description: Starting date to retrieve future operating hours from. Defaults to today's date.
+      description: Start date for date range queries (ISO 8601 format)
       schema:
         type: string
         format: date
-        example: '2023-02-23'
+        example: "2024-01-01"
+
     EndDate:
       name: endDate
       in: query
-      description: End of a date range to retrieve special events for. Defaults to 7 days after `startDate`.
+      description: End date for date range queries (ISO 8601 format)
       schema:
         type: string
         format: date
-        example: '2023-04-18'
-    TicketId:
-      name: ticketId
-      in: path
-      description: Identifier for a ticket to a museum event. Used to generate ticket image.
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: a54a57ca-36f8-421b-a6b4-2e8f26858a4c
+        example: "2024-01-31"
+
   responses:
     BadRequest:
-      description: Bad request.
+      description: Bad request - invalid parameters or malformed request
       content:
-        application/problem+json:
+        application/json:
           schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: Not found.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Invalid request parameters"
+            error: "BAD_REQUEST"
+            statusCode: 400
+
     Unauthorized:
-      description: Unauthorized.
+      description: Unauthorized - invalid or missing API key
       content:
-        application/problem+json:
+        application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "API key validation required"
+            error: "UNAUTHORIZED"
+            statusCode: 401
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Internal server error"
+            error: "INTERNAL_ERROR"
+            statusCode: 500
+
+  examples:
+    GetOrganizationModelsResponseExample:
+      summary: Successful organization models response
+      value:
+        success: true
+        message: "Organization models retrieved successfully"
+        data:
+          - id: "model_abc123"
+            name: "Model Name"
+            status: "active"
+          - id: "model_def456"
+            name: "Another Model"
+            status: "active"
+        metadata:
+          organizationId: "org_12345"
+          apiKeyId: "key_67890"
+          responseTime: 245
+        statusCode: 200
+        responseTime: 245
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      description: API key authentication using Bearer token in Authorization header
+
 tags:
-  - name: Operations
-    description: Operational information about the museum.
-  - name: Events
-    description: Special events hosted by the museum.
-  - name: Tickets
-    description: Museum tickets for general entrance or special events.
+  - name: Organizations
+    description: Organization and model management endpoints
+  - name: Models
+    description: Model-specific operations and data
+  - name: Fans
+    description: Fan-related data and analytics
+  - name: Chats
+    description: Chat conversations and messages
+  - name: Payouts
+    description: Payout transactions and financial data
+  - name: Statistics
+    description: Analytics and statistics endpoints
+
 security:
-  - MuseumPlaceholderAuth: []
+  - ApiKeyAuth: []
