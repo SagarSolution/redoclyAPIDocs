@@ -3,8 +3,8 @@ openapi: 3.1.0
 info:
   title: OnlyFans API Dashboard External API
   description: >
-    External API for accessing OnlyFans model data, analytics, and management
-    features through a secure multi-tenant platform.
+    External API for accessing OnlyFans model data, analytics, chats,
+    payouts, and statistics through a secure multi-tenant platform.
   version: 1.0.0
   termsOfService: https://yourdomain.com/terms
   contact:
@@ -31,14 +31,11 @@ paths:
         - $ref: "#/components/parameters/OrgId"
       responses:
         "200":
-          description: Success
+          description: Organization models retrieved successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
-              examples:
-                success:
-                  $ref: "#/components/examples/GetOrganizationModelsResponseExample"
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -48,7 +45,7 @@ paths:
 
     post:
       summary: Process organization models
-      description: Process or update models for a specific organization.
+      description: Create or update models for a specific organization.
       operationId: postOrganizationModels
       tags: [Organizations]
       parameters:
@@ -61,7 +58,7 @@ paths:
               type: object
       responses:
         "200":
-          description: Success
+          description: Models processed successfully
           content:
             application/json:
               schema:
@@ -70,14 +67,14 @@ paths:
   /models/{modelId}/reconnect:
     post:
       summary: Reconnect model
-      description: Reconnect and refresh model data connection.
+      description: Reconnect and refresh the model data connection.
       operationId: reconnectModel
       tags: [Models]
       parameters:
         - $ref: "#/components/parameters/ModelId"
       responses:
         "200":
-          description: Success
+          description: Model reconnected successfully
           content:
             application/json:
               schema:
@@ -86,13 +83,14 @@ paths:
   /models/{modelId}/users/me:
     get:
       summary: Get model details
+      description: Retrieve detailed information for a specific model.
       operationId: getModelDetails
       tags: [Models]
       parameters:
         - $ref: "#/components/parameters/ModelId"
       responses:
         "200":
-          description: Success
+          description: Model details retrieved successfully
           content:
             application/json:
               schema:
@@ -101,6 +99,7 @@ paths:
   /models/{modelId}/fans/info:
     get:
       summary: Get fan details
+      description: Retrieve detailed information about a specific fan.
       operationId: getFanDetails
       tags: [Fans]
       parameters:
@@ -108,11 +107,12 @@ paths:
         - name: user_id
           in: query
           required: true
+          description: Unique identifier of the fan
           schema:
             type: string
       responses:
         "200":
-          description: Success
+          description: Fan details retrieved successfully
           content:
             application/json:
               schema:
@@ -121,6 +121,7 @@ paths:
   /models/{modelId}/chats:
     get:
       summary: Get model chats
+      description: Retrieve chat conversations for a model with pagination.
       operationId: getModelChats
       tags: [Chats]
       parameters:
@@ -137,7 +138,7 @@ paths:
             default: 0
       responses:
         "200":
-          description: Success
+          description: Chats retrieved successfully
           content:
             application/json:
               schema:
@@ -146,6 +147,7 @@ paths:
   /models/{modelId}/chats/{chatId}/messages:
     get:
       summary: Get chat messages
+      description: Retrieve messages from a specific chat conversation.
       operationId: getChatMessages
       tags: [Chats]
       parameters:
@@ -158,7 +160,23 @@ paths:
             default: 50
       responses:
         "200":
-          description: Success
+          description: Chat messages retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/payouts/transactions:
+    get:
+      summary: Get payout transactions
+      description: Retrieve payout transaction history for a model.
+      operationId: getModelPayoutTransactions
+      tags: [Payouts]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+      responses:
+        "200":
+          description: Payout transactions retrieved successfully
           content:
             application/json:
               schema:
@@ -167,6 +185,7 @@ paths:
   /models/{modelId}/payouts/statistics:
     get:
       summary: Get payout statistics
+      description: Retrieve payout statistics within a date range.
       operationId: getModelPayoutStats
       tags: [Payouts]
       parameters:
@@ -175,7 +194,129 @@ paths:
         - $ref: "#/components/parameters/EndDate"
       responses:
         "200":
-          description: Success
+          description: Payout statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/payouts/requests/referral:
+    get:
+      summary: Get payout referral requests
+      description: Retrieve referral-based payout requests for a model.
+      operationId: getModelPayoutReferralRequests
+      tags: [Payouts]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+      responses:
+        "200":
+          description: Referral payout requests retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/statistics/balances:
+    get:
+      summary: Get payout balances
+      description: Retrieve current payout balances for a model.
+      operationId: getModelPayoutBalances
+      tags: [Statistics]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+      responses:
+        "200":
+          description: Payout balances retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/statistics/overview:
+    get:
+      summary: Get statistics overview
+      description: Retrieve overall performance statistics for a model.
+      operationId: getModelStatsOverview
+      tags: [Statistics]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Statistics overview retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/stats/reach:
+    get:
+      summary: Get reach statistics
+      description: Retrieve audience reach statistics for a model.
+      operationId: getModelReachStats
+      tags: [Statistics]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Reach statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/stats/reach/by-country:
+    get:
+      summary: Get reach statistics by country
+      description: Retrieve reach statistics grouped by country.
+      operationId: getModelReachStatsByCountry
+      tags: [Statistics]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Reach statistics by country retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/stats/fans:
+    get:
+      summary: Get fan statistics
+      description: Retrieve fan-related statistics for a model.
+      operationId: getModelFansStats
+      tags: [Statistics]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Fan statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/stats/fans/top:
+    get:
+      summary: Get top fans
+      description: Retrieve top fans for a model.
+      operationId: getModelTopFans
+      tags: [Statistics]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Top fans retrieved successfully
           content:
             application/json:
               schema:
@@ -185,20 +326,20 @@ components:
   schemas:
     ApiResponse:
       type: object
+      required: [success, message]
       properties:
         success:
           type: boolean
         message:
           type: string
         data:
-          nullable: true
+          type: object
         metadata:
           type: object
         statusCode:
           type: integer
         responseTime:
           type: number
-      required: [success, message]
 
     ErrorResponse:
       type: object
@@ -271,16 +412,6 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
 
-  examples:
-    GetOrganizationModelsResponseExample:
-      value:
-        success: true
-        message: Organization models retrieved successfully
-        data:
-          - id: model_abc123
-            name: Model Name
-        statusCode: 200
-
   securitySchemes:
     ApiKeyAuth:
       type: http
@@ -291,7 +422,7 @@ components:
       type: apiKey
       in: header
       name: X-API-Key
-      description: External API key for tenant access
+      description: External API key authentication
 
 tags:
   - name: Organizations
