@@ -333,7 +333,7 @@ components:
         message:
           type: string
         data:
-          type: object | array
+          type: object
         metadata:
           type: object
         statusCode:
