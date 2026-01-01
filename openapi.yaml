@@ -1,19 +1,23 @@
 openapi: 3.1.0
+
 info:
   title: OnlyFans API Dashboard External API
-  description: External API for accessing OnlyFans model data, analytics, and management features through a secure multi-tenant platform.
+  description: >
+    External API for accessing OnlyFans model data, analytics, and management
+    features through a secure multi-tenant platform.
   version: 1.0.0
-  termsOfService: 'https://yourdomain.com/terms'
+  termsOfService: https://yourdomain.com/terms
   contact:
     email: support@yourdomain.com
-    url: "https://yourdomain.com/support"
+    url: https://yourdomain.com/support
   license:
     name: Proprietary
-    url: "https://yourdomain.com/license"
+    url: https://yourdomain.com/license
+
 servers:
-  - url: "https://api.yourdomain.com/api/v1/onlyfans"
+  - url: https://api.yourdomain.com/api/v1/onlyfans
     description: Production server
-  - url: "http://localhost:3000/api/v1/onlyfans"
+  - url: http://localhost:3000/api/v1/onlyfans
     description: Development server
 
 paths:
@@ -22,8 +26,7 @@ paths:
       summary: Get organization models
       description: Retrieve all models associated with a specific organization.
       operationId: getOrganizationModels
-      tags:
-        - Organizations
+      tags: [Organizations]
       parameters:
         - $ref: "#/components/parameters/OrgId"
       responses:
@@ -37,17 +40,17 @@ paths:
                 success:
                   $ref: "#/components/examples/GetOrganizationModelsResponseExample"
         "400":
-          $ref: '#/components/responses/BadRequest'
+          $ref: "#/components/responses/BadRequest"
         "401":
-          $ref: '#/components/responses/Unauthorized'
+          $ref: "#/components/responses/Unauthorized"
         "500":
-          $ref: '#/components/responses/InternalServerError'
+          $ref: "#/components/responses/InternalServerError"
+
     post:
       summary: Process organization models
       description: Process or update models for a specific organization.
       operationId: postOrganizationModels
-      tags:
-        - Organizations
+      tags: [Organizations]
       parameters:
         - $ref: "#/components/parameters/OrgId"
       requestBody:
@@ -56,7 +59,6 @@ paths:
           application/json:
             schema:
               type: object
-              description: Request payload for processing models
       responses:
         "200":
           description: Success
@@ -64,20 +66,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
 
   /models/{modelId}/reconnect:
     post:
       summary: Reconnect model
       description: Reconnect and refresh model data connection.
       operationId: reconnectModel
-      tags:
-        - Models
+      tags: [Models]
       parameters:
         - $ref: "#/components/parameters/ModelId"
       responses:
@@ -87,20 +82,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
 
   /models/{modelId}/users/me:
     get:
       summary: Get model details
-      description: Retrieve detailed information about a specific model.
       operationId: getModelDetails
-      tags:
-        - Models
+      tags: [Models]
       parameters:
         - $ref: "#/components/parameters/ModelId"
       responses:
@@ -110,26 +97,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
 
   /models/{modelId}/fans/info:
     get:
       summary: Get fan details
-      description: Retrieve detailed information about a specific fan.
       operationId: getFanDetails
-      tags:
-        - Fans
+      tags: [Fans]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - name: user_id
           in: query
           required: true
-          description: Unique identifier for the fan/user
           schema:
             type: string
       responses:
@@ -139,32 +117,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
 
   /models/{modelId}/chats:
     get:
       summary: Get model chats
-      description: Retrieve chat conversations for a model with pagination.
       operationId: getModelChats
-      tags:
-        - Chats
+      tags: [Chats]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - name: limit
           in: query
-          description: Number of chats to retrieve (default 20)
           schema:
             type: integer
             default: 20
-            maximum: 100
         - name: offset
           in: query
-          description: Number of chats to skip (default 0)
           schema:
             type: integer
             default: 0
@@ -175,30 +142,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
 
   /models/{modelId}/chats/{chatId}/messages:
     get:
       summary: Get chat messages
-      description: Retrieve messages from a specific chat conversation.
       operationId: getChatMessages
-      tags:
-        - Chats
+      tags: [Chats]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - $ref: "#/components/parameters/ChatId"
         - name: limit
           in: query
-          description: Number of messages to retrieve (default 50)
           schema:
             type: integer
             default: 50
-            maximum: 200
       responses:
         "200":
           description: Success
@@ -206,50 +163,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-
-  /models/{modelId}/payouts/transactions:
-    get:
-      summary: Get payout transactions
-      description: Retrieve payout transaction history for a model.
-      operationId: getModelPayoutTransactions
-      tags:
-        - Payouts
-      parameters:
-        - $ref: "#/components/parameters/ModelId"
-        - name: limit
-          in: query
-          description: Number of transactions to retrieve (default 10)
-          schema:
-            type: integer
-            default: 10
-            maximum: 100
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
 
   /models/{modelId}/payouts/statistics:
     get:
       summary: Get payout statistics
-      description: Retrieve payout statistics and analytics for a model within a date range.
       operationId: getModelPayoutStats
-      tags:
-        - Payouts
+      tags: [Payouts]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - $ref: "#/components/parameters/StartDate"
@@ -261,183 +180,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-
-  /models/{modelId}/payouts/requests/referral:
-    get:
-      summary: Get payout referral requests
-      description: Retrieve referral-based payout requests for a model.
-      operationId: getModelPayoutReferralRequests
-      tags:
-        - Payouts
-      parameters:
-        - $ref: "#/components/parameters/ModelId"
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-
-  /models/{modelId}/statistics/balances:
-    get:
-      summary: Get payout balances
-      description: Retrieve current payout balances for a model.
-      operationId: getModelPayoutBalances
-      tags:
-        - Statistics
-      parameters:
-        - $ref: "#/components/parameters/ModelId"
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-
-  /models/{modelId}/statistics/overview:
-    get:
-      summary: Get statistics overview
-      description: Retrieve comprehensive statistics overview for a model within a date range.
-      operationId: getModelStatsOverview
-      tags:
-        - Statistics
-      parameters:
-        - $ref: "#/components/parameters/ModelId"
-        - $ref: "#/components/parameters/StartDate"
-        - $ref: "#/components/parameters/EndDate"
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-
-  /models/{modelId}/stats/reach:
-    get:
-      summary: Get reach statistics
-      description: Retrieve audience reach statistics for a model within a date range.
-      operationId: getModelReachStats
-      tags:
-        - Statistics
-      parameters:
-        - $ref: "#/components/parameters/ModelId"
-        - $ref: "#/components/parameters/StartDate"
-        - $ref: "#/components/parameters/EndDate"
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-
-  /models/{modelId}/stats/reach/by-country:
-    get:
-      summary: Get reach statistics by country
-      description: Retrieve audience reach statistics broken down by country for a model within a date range.
-      operationId: getModelReachStatsByCountry
-      tags:
-        - Statistics
-      parameters:
-        - $ref: "#/components/parameters/ModelId"
-        - $ref: "#/components/parameters/StartDate"
-        - $ref: "#/components/parameters/EndDate"
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-
-  /models/{modelId}/stats/fans:
-    get:
-      summary: Get fan statistics
-      description: Retrieve fan-related statistics for a model within a date range.
-      operationId: getModelFansStats
-      tags:
-        - Statistics
-      parameters:
-        - $ref: "#/components/parameters/ModelId"
-        - $ref: "#/components/parameters/StartDate"
-        - $ref: "#/components/parameters/EndDate"
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-
-  /models/{modelId}/stats/fans/top:
-    get:
-      summary: Get top fans
-      description: Retrieve top fans statistics for a model within a date range.
-      operationId: getModelTopFans
-      tags:
-        - Statistics
-      parameters:
-        - $ref: "#/components/parameters/ModelId"
-        - $ref: "#/components/parameters/StartDate"
-        - $ref: "#/components/parameters/EndDate"
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
 
 components:
   schemas:
@@ -446,189 +188,119 @@ components:
       properties:
         success:
           type: boolean
-          description: Indicates if the request was successful
-          example: true
         message:
           type: string
-          description: Human-readable response message
-          example: "Organization models retrieved successfully"
         data:
-          description: The actual response data
+          nullable: true
         metadata:
           type: object
-          properties:
-            organizationId:
-              type: string
-              description: Organization identifier
-              example: "org_12345"
-            apiKeyId:
-              type: string
-              description: API key identifier
-              example: "key_67890"
-            modelId:
-              type: string
-              description: Model identifier (when applicable)
-              example: "model_abc123"
-            responseTime:
-              type: number
-              description: Response time in milliseconds
-              example: 245
-          description: Additional metadata about the request
         statusCode:
           type: integer
-          description: HTTP status code
-          example: 200
         responseTime:
           type: number
-          description: Response time in milliseconds
-          example: 245
-      required:
-        - success
-        - message
+      required: [success, message]
 
     ErrorResponse:
       type: object
+      required: [success, message, error, statusCode]
       properties:
         success:
           type: boolean
-          example: false
         message:
           type: string
-          example: "API key validation required"
         error:
           type: string
-          example: "UNAUTHORIZED"
         statusCode:
           type: integer
-          example: 401
-      required:
-        - success
-        - message
-        - error
-        - statusCode
 
   parameters:
     OrgId:
       name: orgId
       in: path
       required: true
-      description: Unique identifier for the organization
       schema:
         type: string
-        example: "org_12345"
 
     ModelId:
       name: modelId
       in: path
       required: true
-      description: Unique identifier for the model
       schema:
         type: string
-        example: "model_abc123"
 
     ChatId:
       name: chatId
       in: path
       required: true
-      description: Unique identifier for the chat conversation
       schema:
         type: string
-        example: "chat_xyz789"
 
     StartDate:
       name: startDate
       in: query
-      description: Start date for date range queries (ISO 8601 format)
       schema:
         type: string
         format: date
-        example: "2024-01-01"
 
     EndDate:
       name: endDate
       in: query
-      description: End date for date range queries (ISO 8601 format)
       schema:
         type: string
         format: date
-        example: "2024-01-31"
 
   responses:
     BadRequest:
-      description: Bad request - invalid parameters or malformed request
+      description: Bad request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            success: false
-            message: "Invalid request parameters"
-            error: "BAD_REQUEST"
-            statusCode: 400
+            $ref: "#/components/schemas/ErrorResponse"
 
     Unauthorized:
-      description: Unauthorized - invalid or missing API key
+      description: Unauthorized
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            success: false
-            message: "API key validation required"
-            error: "UNAUTHORIZED"
-            statusCode: 401
+            $ref: "#/components/schemas/ErrorResponse"
 
     InternalServerError:
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            success: false
-            message: "Internal server error"
-            error: "INTERNAL_ERROR"
-            statusCode: 500
+            $ref: "#/components/schemas/ErrorResponse"
 
   examples:
     GetOrganizationModelsResponseExample:
-      summary: Successful organization models response
       value:
         success: true
-        message: "Organization models retrieved successfully"
+        message: Organization models retrieved successfully
         data:
-          - id: "model_abc123"
-            name: "Model Name"
-            status: "active"
-          - id: "model_def456"
-            name: "Another Model"
-            status: "active"
-        metadata:
-          organizationId: "org_12345"
-          apiKeyId: "key_67890"
-          responseTime: 245
+          - id: model_abc123
+            name: Model Name
         statusCode: 200
-        responseTime: 245
 
   securitySchemes:
     ApiKeyAuth:
       type: http
       scheme: bearer
-      description: API key authentication using Bearer token in Authorization header
+      description: Bearer token authentication
+
+    XApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: External API key for tenant access
 
 tags:
   - name: Organizations
-    description: Organization and model management endpoints
   - name: Models
-    description: Model-specific operations and data
   - name: Fans
-    description: Fan-related data and analytics
   - name: Chats
-    description: Chat conversations and messages
   - name: Payouts
-    description: Payout transactions and financial data
   - name: Statistics
-    description: Analytics and statistics endpoints
 
 security:
   - ApiKeyAuth: []
+    XApiKeyAuth: []
