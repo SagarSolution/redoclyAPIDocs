@@ -15,18 +15,332 @@ info:
     url: https://yourdomain.com/license
 
 servers:
-  - url: https://api.yourdomain.com/api/v1/onlyfans
+  - url: https://api.yourdomain.com/api/v1
     description: Production server
-  - url: http://localhost:3000/api/v1/onlyfans
+  - url: http://localhost:3000/api/v1
     description: Development server
 
 paths:
-  /organizations/{orgId}/models:
+  # Organization Management Endpoints
+  /organizations:
+    post:
+      summary: Create organization
+      description: Create a new organization for managing OnlyFans API access.
+      operationId: createOrganization
+      tags: [Organizations]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  description: Organization name
+                description:
+                  type: string
+                  description: Organization description
+      responses:
+        "201":
+          description: Organization created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    get:
+      summary: List organizations
+      description: Retrieve all organizations accessible to the authenticated user.
+      operationId: listOrganizations
+      tags: [Organizations]
+      responses:
+        "200":
+          description: Organizations retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /organizations/{orgId}:
+    get:
+      summary: Get organization details
+      description: Retrieve details of a specific organization.
+      operationId: getOrganization
+      tags: [Organizations]
+      parameters:
+        - $ref: "#/components/parameters/OrgId"
+      responses:
+        "200":
+          description: Organization details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Organization not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    put:
+      summary: Update organization
+      description: Update organization details.
+      operationId: updateOrganization
+      tags: [Organizations]
+      parameters:
+        - $ref: "#/components/parameters/OrgId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Organization name
+                description:
+                  type: string
+                  description: Organization description
+      responses:
+        "200":
+          description: Organization updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Organization not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      summary: Delete organization
+      description: Delete an organization and all associated API keys.
+      operationId: deleteOrganization
+      tags: [Organizations]
+      parameters:
+        - $ref: "#/components/parameters/OrgId"
+      responses:
+        "200":
+          description: Organization deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Organization not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  # API Key Management Endpoints
+  /organizations/{orgId}/api-keys:
+    post:
+      summary: Create API key
+      description: Create a new API key for accessing OnlyFans APIs within an organization.
+      operationId: createApiKey
+      tags: [API Keys]
+      parameters:
+        - $ref: "#/components/parameters/OrgId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  description: API key name for identification
+                description:
+                  type: string
+                  description: API key description
+                expiresAt:
+                  type: string
+                  format: date-time
+                  description: Optional expiration date for the API key
+      responses:
+        "201":
+          description: API key created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Organization not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    get:
+      summary: List API keys
+      description: Retrieve all API keys for an organization.
+      operationId: listApiKeys
+      tags: [API Keys]
+      parameters:
+        - $ref: "#/components/parameters/OrgId"
+      responses:
+        "200":
+          description: API keys retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Organization not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /organizations/{orgId}/api-keys/{keyId}:
+    get:
+      summary: Get API key details
+      description: Retrieve details of a specific API key.
+      operationId: getApiKey
+      tags: [API Keys]
+      parameters:
+        - $ref: "#/components/parameters/OrgId"
+        - $ref: "#/components/parameters/KeyId"
+      responses:
+        "200":
+          description: API key details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: API key or organization not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    put:
+      summary: Update API key
+      description: Update API key details (name, description, expiration).
+      operationId: updateApiKey
+      tags: [API Keys]
+      parameters:
+        - $ref: "#/components/parameters/OrgId"
+        - $ref: "#/components/parameters/KeyId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: API key name
+                description:
+                  type: string
+                  description: API key description
+                expiresAt:
+                  type: string
+                  format: date-time
+                  description: Expiration date for the API key
+      responses:
+        "200":
+          description: API key updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: API key or organization not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      summary: Delete API key
+      description: Delete an API key.
+      operationId: deleteApiKey
+      tags: [API Keys]
+      parameters:
+        - $ref: "#/components/parameters/OrgId"
+        - $ref: "#/components/parameters/KeyId"
+      responses:
+        "200":
+          description: API key deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: API key or organization not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  # OnlyFans API Endpoints
+  /onlyfans/organizations/{orgId}/models:
     get:
       summary: Get organization models
       description: Retrieve all models associated with a specific organization.
       operationId: getOrganizationModels
-      tags: [Organizations]
+      tags: [OnlyFans - Organizations]
       parameters:
         - $ref: "#/components/parameters/OrgId"
       responses:
@@ -47,7 +361,7 @@ paths:
       summary: Process organization models
       description: Create or update models for a specific organization.
       operationId: postOrganizationModels
-      tags: [Organizations]
+      tags: [OnlyFans - Organizations]
       parameters:
         - $ref: "#/components/parameters/OrgId"
       requestBody:
@@ -64,12 +378,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/reconnect:
+  /onlyfans/models/{modelId}/reconnect:
     post:
       summary: Reconnect model
       description: Reconnect and refresh the model data connection.
       operationId: reconnectModel
-      tags: [Models]
+      tags: [OnlyFans - Models]
       parameters:
         - $ref: "#/components/parameters/ModelId"
       responses:
@@ -80,12 +394,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/users/me:
+  /onlyfans/models/{modelId}/users/me:
     get:
       summary: Get model details
       description: Retrieve detailed information for a specific model.
       operationId: getModelDetails
-      tags: [Models]
+      tags: [OnlyFans - Models]
       parameters:
         - $ref: "#/components/parameters/ModelId"
       responses:
@@ -96,12 +410,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/fans/info:
+  /onlyfans/models/{modelId}/fans/info:
     get:
       summary: Get fan details
       description: Retrieve detailed information about a specific fan.
       operationId: getFanDetails
-      tags: [Fans]
+      tags: [OnlyFans - Fans]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - name: user_id
@@ -118,12 +432,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/chats:
+  /onlyfans/models/{modelId}/chats:
     get:
       summary: Get model chats
       description: Retrieve chat conversations for a model with pagination.
       operationId: getModelChats
-      tags: [Chats]
+      tags: [OnlyFans - Chats]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - name: limit
@@ -144,12 +458,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/chats/{chatId}/messages:
+  /onlyfans/models/{modelId}/chats/{chatId}/messages:
     get:
       summary: Get chat messages
       description: Retrieve messages from a specific chat conversation.
       operationId: getChatMessages
-      tags: [Chats]
+      tags: [OnlyFans - Chats]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - $ref: "#/components/parameters/ChatId"
@@ -166,12 +480,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/payouts/transactions:
+  /onlyfans/models/{modelId}/payouts/transactions:
     get:
       summary: Get payout transactions
       description: Retrieve payout transaction history for a model.
       operationId: getModelPayoutTransactions
-      tags: [Payouts]
+      tags: [OnlyFans - Payouts]
       parameters:
         - $ref: "#/components/parameters/ModelId"
       responses:
@@ -182,12 +496,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/payouts/statistics:
+  /onlyfans/models/{modelId}/payouts/statistics:
     get:
       summary: Get payout statistics
       description: Retrieve payout statistics within a date range.
       operationId: getModelPayoutStats
-      tags: [Payouts]
+      tags: [OnlyFans - Payouts]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - $ref: "#/components/parameters/StartDate"
@@ -200,12 +514,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/payouts/requests/referral:
+  /onlyfans/models/{modelId}/payouts/requests/referral:
     get:
       summary: Get payout referral requests
       description: Retrieve referral-based payout requests for a model.
       operationId: getModelPayoutReferralRequests
-      tags: [Payouts]
+      tags: [OnlyFans - Payouts]
       parameters:
         - $ref: "#/components/parameters/ModelId"
       responses:
@@ -216,12 +530,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/statistics/balances:
+  /onlyfans/models/{modelId}/statistics/balances:
     get:
       summary: Get payout balances
       description: Retrieve current payout balances for a model.
       operationId: getModelPayoutBalances
-      tags: [Statistics]
+      tags: [OnlyFans - Statistics]
       parameters:
         - $ref: "#/components/parameters/ModelId"
       responses:
@@ -232,12 +546,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/statistics/overview:
+  /onlyfans/models/{modelId}/statistics/overview:
     get:
       summary: Get statistics overview
       description: Retrieve overall performance statistics for a model.
       operationId: getModelStatsOverview
-      tags: [Statistics]
+      tags: [OnlyFans - Statistics]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - $ref: "#/components/parameters/StartDate"
@@ -250,12 +564,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/stats/reach:
+  /onlyfans/models/{modelId}/stats/reach:
     get:
       summary: Get reach statistics
       description: Retrieve audience reach statistics for a model.
       operationId: getModelReachStats
-      tags: [Statistics]
+      tags: [OnlyFans - Statistics]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - $ref: "#/components/parameters/StartDate"
@@ -268,12 +582,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/stats/reach/by-country:
+  /onlyfans/models/{modelId}/stats/reach/by-country:
     get:
       summary: Get reach statistics by country
       description: Retrieve reach statistics grouped by country.
       operationId: getModelReachStatsByCountry
-      tags: [Statistics]
+      tags: [OnlyFans - Statistics]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - $ref: "#/components/parameters/StartDate"
@@ -286,12 +600,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/stats/fans:
+  /onlyfans/models/{modelId}/stats/fans:
     get:
       summary: Get fan statistics
       description: Retrieve fan-related statistics for a model.
       operationId: getModelFansStats
-      tags: [Statistics]
+      tags: [OnlyFans - Statistics]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - $ref: "#/components/parameters/StartDate"
@@ -304,12 +618,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
 
-  /models/{modelId}/stats/fans/top:
+  /onlyfans/models/{modelId}/stats/fans/top:
     get:
       summary: Get top fans
       description: Retrieve top fans for a model.
       operationId: getModelTopFans
-      tags: [Statistics]
+      tags: [OnlyFans - Statistics]
       parameters:
         - $ref: "#/components/parameters/ModelId"
         - $ref: "#/components/parameters/StartDate"
@@ -376,6 +690,13 @@ components:
       schema:
         type: string
 
+    KeyId:
+      name: keyId
+      in: path
+      required: true
+      schema:
+        type: string
+
     StartDate:
       name: startDate
       in: query
@@ -416,22 +737,32 @@ components:
     ApiKeyAuth:
       type: http
       scheme: bearer
-      description: Bearer token authentication
+      description: Bearer token authentication for admin operations
 
     XApiKeyAuth:
       type: apiKey
       in: header
       name: X-API-Key
-      description: External API key authentication
+      description: API key authentication for OnlyFans API access
 
 tags:
   - name: Organizations
-  - name: Models
-  - name: Fans
-  - name: Chats
-  - name: Payouts
-  - name: Statistics
+    description: Organization management operations
+  - name: API Keys
+    description: API key management within organizations
+  - name: OnlyFans - Organizations
+    description: OnlyFans organization model operations
+  - name: OnlyFans - Models
+    description: OnlyFans model operations
+  - name: OnlyFans - Fans
+    description: OnlyFans fan operations
+  - name: OnlyFans - Chats
+    description: OnlyFans chat operations
+  - name: OnlyFans - Payouts
+    description: OnlyFans payout operations
+  - name: OnlyFans - Statistics
+    description: OnlyFans statistics operations
 
 security:
   - ApiKeyAuth: []
-    XApiKeyAuth: []
+  - XApiKeyAuth: []
