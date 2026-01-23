@@ -6,8 +6,9 @@ apis:
     root: ./openapi.yaml
     openapi:
       theme:
-        hideDownloadButton: false
-        hideLoading: false
+        openapi:
+          hideDownloadButton: false
+          hideLoading: false
 
         typography:
           fontFamily: Inter, -apple-system, BlinkMacSystemFont, sans-serif
