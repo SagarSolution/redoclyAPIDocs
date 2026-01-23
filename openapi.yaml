@@ -1,28 +1,25 @@
 openapi: 3.1.0
 
 info:
-  title: OnlyFans API Dashboard - Complete API Documentation
+  title: Project Service
   description: >
-    Complete API documentation for the OnlyFans API Dashboard platform.
-    
-    ## Getting Started
-    
-    1. **Register and Login** - Create an account and authenticate
-    2. **Create Organization** - Set up your organization workspace
-    3. **Create API Keys** - Generate API keys for accessing OnlyFans data
-    4. **Access OnlyFans APIs** - Use your organization ID and API keys to fetch data
-    
-    ## Authentication
-    
-    This API uses multiple authentication methods:
-    - **Bearer Token**: For user authentication (obtain via login)
-    - **X-API-Key**: For API key authentication (use generated API keys)
-    
-    ## API Sections
-    
-    - **Organizations**: Manage organizations, team members, and settings
-    - **API Keys**: Create, manage, and secure API keys for your organization
-    - **OnlyFans**: Access OnlyFans model data, analytics, and statistics
+    Complete API documentation for the Project Service platform.
+
+    ## Project Service
+
+    Welcome to the Project Service API documentation. This platform provides comprehensive project management solutions with advanced features for team collaboration, task tracking, and project analytics.
+
+    ## Get Started
+
+    ### Authentication
+
+    Get started with our API by creating an account and obtaining authentication credentials:
+
+    #### Register
+    Create a new account to access the Project Service platform.
+
+    #### Login
+    Authenticate with your registered credentials to obtain access tokens.
   version: 1.0.0
   termsOfService: https://yourdomain.com/terms
   contact:
@@ -873,63 +870,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
 
 # =============================================================================
-# ONLYFANS APIs (using your existing spec)
+# ONLYFANS APIs
 # =============================================================================
-
-  /onlyfans/organizations/{orgId}/models:
-    get:
-      summary: Get organization models
-      description: Retrieve all models associated with a specific organization.
-      operationId: getOrganizationModels
-      tags: [OnlyFans - Organizations]
-      parameters:
-        - name: orgId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Organization ID
-          example: org_1234567890
-      responses:
-        "200":
-          description: Organization models retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-    post:
-      summary: Process organization models
-      description: Create or update models for a specific organization.
-      operationId: postOrganizationModels
-      tags: [OnlyFans - Organizations]
-      parameters:
-        - name: orgId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Organization ID
-          example: org_1234567890
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          description: Models processed successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
 
   /onlyfans/models/{modelId}/reconnect:
     post:
@@ -1677,11 +1619,9 @@ components:
 
 tags:
   - name: Organizations
-    description: Organization management and team administration
+    description: Organization management, team members, and settings
   - name: API Keys
     description: API key creation, management, and security
-  - name: OnlyFans - Organizations
-    description: OnlyFans organization-specific operations
   - name: OnlyFans - Models
     description: OnlyFans model management and operations
   - name: OnlyFans - Fans
