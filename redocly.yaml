@@ -4,23 +4,3 @@ extends:
 apis:
   main:
     root: ./openapi.yaml
-
-# ⬇️ theme properties moved to ROOT (no "theme:" key)
-typography:
-  fontFamily: Inter, -apple-system, BlinkMacSystemFont, sans-serif
-  fontSize: 14px
-  headings:
-    fontFamily: Inter, sans-serif
-
-colors:
-  primary:
-    main: '#2563eb'
-  text:
-    primary: '#0f172a'
-    secondary: '#475569'
-
-spacing:
-  unit: 8
-
-css:
-  - ./styles/custom.css
