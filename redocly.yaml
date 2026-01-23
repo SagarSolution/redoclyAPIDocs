@@ -1,34 +1,29 @@
+extends:
+  - recommended
+
 apis:
   main:
     root: ./openapi.yaml
     openapi:
       theme:
         hideDownloadButton: false
+        hideLoading: false
 
-extends:
-  - recommended
+        typography:
+          fontFamily: Inter, -apple-system, BlinkMacSystemFont, sans-serif
+          fontSize: 14px
+          headings:
+            fontFamily: Inter, sans-serif
 
-  
-theme:
-  openapi:
-    hideDownloadButton: false
-    hideLoading: false
+        colors:
+          primary:
+            main: '#2563eb'
+          text:
+            primary: '#0f172a'
+            secondary: '#475569'
 
-  typography:
-    fontFamily: Inter, -apple-system, BlinkMacSystemFont, sans-serif
-    fontSize: 14px
-    headings:
-      fontFamily: Inter, sans-serif
+        spacing:
+          unit: 8
 
-  colors:
-    primary:
-      main: '#2563eb'
-    text:
-      primary: '#0f172a'
-      secondary: '#475569'
-
-  spacing:
-    unit: 8
-
-  css:
-    - ./styles/custom.css
+        css:
+          - ./styles/custom.css
