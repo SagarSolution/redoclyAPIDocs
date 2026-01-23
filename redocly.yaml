@@ -8,11 +8,6 @@ apis:
 extends:
   - recommended
 
-theme:
-  openapi:
-    hideDownloadButton: false
-    hideLoading: false
-
   typography:
     fontFamily: Inter, -apple-system, BlinkMacSystemFont, sans-serif
     fontSize: 14px
