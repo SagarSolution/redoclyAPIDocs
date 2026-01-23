@@ -1,6 +1,9 @@
 apis:
   main:
     root: ./openapi.yaml
+    openapi:
+      theme:
+        hideDownloadButton: false
 
 extends:
   - recommended
