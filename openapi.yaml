@@ -1,25 +1,10 @@
 openapi: 3.1.0
 
 info:
-  title: Project Service
+  title: OnlyFans API Dashboard External API
   description: >
-    Complete API documentation for the Project Service platform.
-
-    ## Project Service
-
-    Welcome to the Project Service API documentation. This platform provides comprehensive project management solutions with advanced features for team collaboration, task tracking, and project analytics.
-
-    ## Get Started
-
-    ### Authentication
-
-    Get started with our API by creating an account and obtaining authentication credentials:
-
-    #### Register
-    Create a new account to access the Project Service platform.
-
-    #### Login
-    Authenticate with your registered credentials to obtain access tokens.
+    External API for accessing OnlyFans model data, analytics, chats,
+    payouts, and statistics through a secure multi-tenant platform.
   version: 1.0.0
   termsOfService: https://yourdomain.com/terms
   contact:
@@ -30,849 +15,315 @@ info:
     url: https://yourdomain.com/license
 
 servers:
-  - url: https://api.yourdomain.com/api/v1
+  - url: https://api.yourdomain.com/api/v1/onlyfans
     description: Production server
-  - url: http://localhost:3000/api/v1
+  - url: http://localhost:3000/api/v1/onlyfans
     description: Development server
 
-# =============================================================================
-# ORGANIZATION MANAGEMENT APIs
-# =============================================================================
-
 paths:
-  /organizations:
+  /organizations/{orgId}/models:
     get:
-      summary: List Organizations
-      description: Get paginated list of organizations for the authenticated user
-      operationId: listOrganizations
+      summary: Get organization models
+      description: Retrieve all models associated with a specific organization.
+      operationId: getOrganizationModels
       tags: [Organizations]
-      security:
-        - bearerAuth: []
       parameters:
-        - name: page
+        - $ref: "#/components/parameters/OrgId"
+      responses:
+        "200":
+          description: Organization models retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      summary: Process organization models
+      description: Create or update models for a specific organization.
+      operationId: postOrganizationModels
+      tags: [Organizations]
+      parameters:
+        - $ref: "#/components/parameters/OrgId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Models processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/reconnect:
+    post:
+      summary: Reconnect model
+      description: Reconnect and refresh the model data connection.
+      operationId: reconnectModel
+      tags: [Models]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+      responses:
+        "200":
+          description: Model reconnected successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/users/me:
+    get:
+      summary: Get model details
+      description: Retrieve detailed information for a specific model.
+      operationId: getModelDetails
+      tags: [Models]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+      responses:
+        "200":
+          description: Model details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/fans/info:
+    get:
+      summary: Get fan details
+      description: Retrieve detailed information about a specific fan.
+      operationId: getFanDetails
+      tags: [Fans]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - name: user_id
           in: query
+          required: true
+          description: Unique identifier of the fan
           schema:
-            type: integer
-            minimum: 1
-            default: 1
-          description: Page number for pagination
+            type: string
+      responses:
+        "200":
+          description: Fan details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/chats:
+    get:
+      summary: Get model chats
+      description: Retrieve chat conversations for a model with pagination.
+      operationId: getModelChats
+      tags: [Chats]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
         - name: limit
           in: query
           schema:
             type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          description: Number of items per page
-      responses:
-        "200":
-          description: Organizations retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Organizations retrieved successfully"
-                  data:
-                    $ref: "#/components/schemas/PaginatedOrganizationListResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-    post:
-      summary: Create Organization
-      description: Create a new organization
-      operationId: createOrganization
-      tags: [Organizations]
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - name
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  maxLength: 100
-                  example: "My Company"
-                description:
-                  type: string
-                  maxLength: 500
-                  example: "Content management organization"
-                logo:
-                  type: string
-                  format: uri
-                  example: "https://example.com/logo.png"
-                settings:
-                  type: object
-                  description: Additional organization settings
-      responses:
-        "201":
-          description: Organization created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Organization created successfully"
-                  data:
-                    $ref: "#/components/schemas/OrganizationResponse"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "422":
-          description: Validation error (name already exists)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-  /organizations/switch:
-    post:
-      summary: Switch Active Organization
-      description: Switch the active organization context
-      operationId: switchOrganization
-      tags: [Organizations]
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - organizationId
-              properties:
-                organizationId:
-                  type: string
-                  example: "org_1234567890"
-      responses:
-        "200":
-          description: Organization switched successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Organization switched successfully"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Access denied to organization
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-  /organizations/{id}:
-    get:
-      summary: Get Organization
-      description: Get organization details
-      operationId: getOrganization
-      tags: [Organizations]
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          example: org_1234567890
-      responses:
-        "200":
-          description: Organization details retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Organization retrieved successfully"
-                  data:
-                    $ref: "#/components/schemas/OrganizationResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          description: Organization not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-    put:
-      summary: Update Organization
-      description: Update organization details (Admin only)
-      operationId: updateOrganization
-      tags: [Organizations]
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          example: org_1234567890
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  maxLength: 100
-                  example: "Updated Company Name"
-                description:
-                  type: string
-                  maxLength: 500
-                  example: "Updated description"
-                logo:
-                  type: string
-                  format: uri
-                  example: "https://example.com/new-logo.png"
-                settings:
-                  type: object
-                  description: Updated organization settings
-      responses:
-        "200":
-          description: Organization updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Organization updated successfully"
-                  data:
-                    $ref: "#/components/schemas/OrganizationResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Admin access required
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "404":
-          description: Organization not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-    delete:
-      summary: Deactivate Organization
-      description: Deactivate organization (Admin only)
-      operationId: deactivateOrganization
-      tags: [Organizations]
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          example: org_1234567890
-      responses:
-        "200":
-          description: Organization deactivated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Organization deactivated successfully"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Admin access required
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "404":
-          description: Organization not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-  /organizations/{id}/invite:
-    post:
-      summary: Invite User to Organization
-      description: Invite a user to join the organization (Admin only)
-      operationId: inviteUserToOrganization
-      tags: [Organizations]
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          example: org_1234567890
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-              properties:
-                email:
-                  type: string
-                  format: email
-                  example: "user@example.com"
-                role:
-                  type: string
-                  enum: [USER, ADMIN]
-                  default: USER
-                  example: "USER"
-      responses:
-        "200":
-          description: User invited successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "User invited successfully"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Admin access required
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "404":
-          description: Organization not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-# =============================================================================
-# API KEYS MANAGEMENT APIs
-# =============================================================================
-
-  /api-keys:
-    get:
-      summary: List API Keys
-      description: Get paginated API keys for the authenticated user. If organizationId is provided, returns keys for that organization, otherwise returns keys for all organizations the user has access to.
-      operationId: listApiKeys
-      tags: [API Keys]
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: organizationId
-          in: query
-          schema:
-            type: string
-          description: Optional organization ID to filter API keys by specific organization
-          example: org_1234567890
-        - name: page
+            default: 20
+        - name: offset
           in: query
           schema:
             type: integer
-            minimum: 1
-            default: 1
-          description: Page number for pagination
+            default: 0
+      responses:
+        "200":
+          description: Chats retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/chats/{chatId}/messages:
+    get:
+      summary: Get chat messages
+      description: Retrieve messages from a specific chat conversation.
+      operationId: getChatMessages
+      tags: [Chats]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/ChatId"
         - name: limit
           in: query
           schema:
             type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          description: Number of items per page
+            default: 50
       responses:
         "200":
-          description: API keys retrieved successfully
+          description: Chat messages retrieved successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "API keys retrieved successfully"
-                  data:
-                    $ref: "#/components/schemas/PaginatedApiKeyListResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Access denied to specified organization
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
+                $ref: "#/components/schemas/ApiResponse"
 
-    post:
-      summary: Create API Key
-      description: Create a new API key for the specified organization
-      operationId: createApiKey
-      tags: [API Keys]
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - name
-                - organizationId
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  maxLength: 100
-                  example: "Production API Key"
-                organizationId:
-                  type: string
-                  description: ID of the organization to create the API key for
-                  example: "org_1234567890"
-                permissions:
-                  type: object
-                  description: API permissions configuration
-                  example: {"read": true, "write": false}
-                rateLimit:
-                  type: integer
-                  minimum: 1
-                  default: 1000
-                  example: 1000
-                expiresAt:
-                  type: string
-                  format: date-time
-                  example: "2024-12-31T23:59:59.000Z"
-      responses:
-        "201":
-          description: API key created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "API key created successfully"
-                  data:
-                    $ref: "#/components/schemas/ApiKeyWithPlainKey"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Access denied to specified organization
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "422":
-          description: Validation error (name already exists)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-  /api-keys/{id}:
+  /models/{modelId}/payouts/transactions:
     get:
-      summary: Get API Key
-      description: Get details of a specific API key
-      operationId: getApiKey
-      tags: [API Keys]
-      security:
-        - bearerAuth: []
+      summary: Get payout transactions
+      description: Retrieve payout transaction history for a model.
+      operationId: getModelPayoutTransactions
+      tags: [Payouts]
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          example: key_1234567890
+        - $ref: "#/components/parameters/ModelId"
       responses:
         "200":
-          description: API key details retrieved successfully
+          description: Payout transactions retrieved successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "API key retrieved successfully"
-                  data:
-                    $ref: "#/components/schemas/ApiKeyResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Access denied to API key
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "404":
-          description: API key not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
+                $ref: "#/components/schemas/ApiResponse"
 
-    put:
-      summary: Update API Key
-      description: Update an existing API key
-      operationId: updateApiKey
-      tags: [API Keys]
-      security:
-        - bearerAuth: []
+  /models/{modelId}/payouts/statistics:
+    get:
+      summary: Get payout statistics
+      description: Retrieve payout statistics within a date range.
+      operationId: getModelPayoutStats
+      tags: [Payouts]
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          example: key_1234567890
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  maxLength: 100
-                  example: "Updated API Key Name"
-                permissions:
-                  type: object
-                  description: Updated API permissions
-                  example: {"read": true, "write": true}
-                rateLimit:
-                  type: integer
-                  minimum: 1
-                  example: 2000
-                expiresAt:
-                  type: string
-                  format: date-time
-                  example: "2025-12-31T23:59:59.000Z"
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
       responses:
         "200":
-          description: API key updated successfully
+          description: Payout statistics retrieved successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "API key updated successfully"
-                  data:
-                    $ref: "#/components/schemas/ApiKeyResponse"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Access denied to API key
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "404":
-          description: API key not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
+                $ref: "#/components/schemas/ApiResponse"
 
-    delete:
-      summary: Delete API Key
-      description: Permanently revoke an API key
-      operationId: deleteApiKey
-      tags: [API Keys]
-      security:
-        - bearerAuth: []
+  /models/{modelId}/payouts/requests/referral:
+    get:
+      summary: Get payout referral requests
+      description: Retrieve referral-based payout requests for a model.
+      operationId: getModelPayoutReferralRequests
+      tags: [Payouts]
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          example: key_1234567890
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                organizationId:
-                  type: string
-                  description: Optional organization ID to delete API key from specific organization
-                  example: "org_1234567890"
+        - $ref: "#/components/parameters/ModelId"
       responses:
         "200":
-          description: API key deleted successfully
+          description: Referral payout requests retrieved successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "API key deleted successfully"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Access denied to API key
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "404":
-          description: API key not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
+                $ref: "#/components/schemas/ApiResponse"
 
-  /api-keys/{id}/enable:
-    post:
-      summary: Enable API Key
-      description: Enable a previously disabled API key
-      operationId: enableApiKey
-      tags: [API Keys]
-      security:
-        - bearerAuth: []
+  /models/{modelId}/statistics/balances:
+    get:
+      summary: Get payout balances
+      description: Retrieve current payout balances for a model.
+      operationId: getModelPayoutBalances
+      tags: [Statistics]
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          example: key_1234567890
+        - $ref: "#/components/parameters/ModelId"
       responses:
         "200":
-          description: API key enabled successfully
+          description: Payout balances retrieved successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "API key enabled successfully"
-                  data:
-                    $ref: "#/components/schemas/ApiKeyResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Access denied to API key
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "404":
-          description: API key not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
+                $ref: "#/components/schemas/ApiResponse"
 
-  /api-keys/{id}/disable:
-    post:
-      summary: Disable API Key
-      description: Temporarily disable an API key
-      operationId: disableApiKey
-      tags: [API Keys]
-      security:
-        - bearerAuth: []
+  /models/{modelId}/statistics/overview:
+    get:
+      summary: Get statistics overview
+      description: Retrieve overall performance statistics for a model.
+      operationId: getModelStatsOverview
+      tags: [Statistics]
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          example: key_1234567890
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
       responses:
         "200":
-          description: API key disabled successfully
+          description: Statistics overview retrieved successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "API key disabled successfully"
-                  data:
-                    $ref: "#/components/schemas/ApiKeyResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Access denied to API key
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "404":
-          description: API key not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
+                $ref: "#/components/schemas/ApiResponse"
 
-  /api-keys/{id}/regenerate:
-    post:
-      summary: Regenerate API Key
-      description: Generate a new API key secret while keeping the same settings
-      operationId: regenerateApiKey
-      tags: [API Keys]
-      security:
-        - bearerAuth: []
+  /models/{modelId}/stats/reach:
+    get:
+      summary: Get reach statistics
+      description: Retrieve audience reach statistics for a model.
+      operationId: getModelReachStats
+      tags: [Statistics]
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          example: key_1234567890
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
       responses:
         "200":
-          description: API key regenerated successfully
+          description: Reach statistics retrieved successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "API key regenerated successfully"
-                  data:
-                    $ref: "#/components/schemas/ApiKeyWithPlainKey"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          description: Access denied to API key
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "404":
-          description: API key not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
+                $ref: "#/components/schemas/ApiResponse"
 
+  /models/{modelId}/stats/reach/by-country:
+    get:
+      summary: Get reach statistics by country
+      description: Retrieve reach statistics grouped by country.
+      operationId: getModelReachStatsByCountry
+      tags: [Statistics]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Reach statistics by country retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/stats/fans:
+    get:
+      summary: Get fan statistics
+      description: Retrieve fan-related statistics for a model.
+      operationId: getModelFansStats
+      tags: [Statistics]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Fan statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
+  /models/{modelId}/stats/fans/top:
+    get:
+      summary: Get top fans
+      description: Retrieve top fans for a model.
+      operationId: getModelTopFans
+      tags: [Statistics]
+      parameters:
+        - $ref: "#/components/parameters/ModelId"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+      responses:
+        "200":
+          description: Top fans retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
 
 components:
   schemas:
-    # Common Response Schemas
     ApiResponse:
       type: object
       required: [success, message]
@@ -903,258 +354,41 @@ components:
         statusCode:
           type: integer
 
-    # Organization Schemas
-    OrganizationResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "org_1234567890"
-        name:
-          type: string
-          example: "My Company"
-        slug:
-          type: string
-          example: "my-company"
-        description:
-          type: string
-          example: "Content management organization"
-        logo:
-          type: string
-          format: uri
-          example: "https://example.com/logo.png"
-        status:
-          type: string
-          enum: [ACTIVE, INACTIVE, SUSPENDED]
-          example: "ACTIVE"
-        trialEndsAt:
-          type: string
-          format: date-time
-          example: "2024-12-31T23:59:59.000Z"
-        settings:
-          type: object
-          description: Organization settings
-        memberCount:
-          type: integer
-          example: 5
-        apiKeyCount:
-          type: integer
-          example: 3
-        creditBalance:
-          type: number
-          example: 150.50
-        members:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                example: "user_1234567890"
-              name:
-                type: string
-                example: "John Doe"
-              email:
-                type: string
-                format: email
-                example: "john@example.com"
-              role:
-                type: string
-                enum: [USER, ADMIN]
-                example: "USER"
-              joinedAt:
-                type: string
-                format: date-time
-                example: "2024-01-15T10:30:00.000Z"
-        createdAt:
-          type: string
-          format: date-time
-          example: "2024-01-01T09:00:00.000Z"
-        updatedAt:
-          type: string
-          format: date-time
-          example: "2024-01-15T14:20:00.000Z"
-        lastActivityAt:
-          type: string
-          format: date-time
-          example: "2024-01-15T14:20:00.000Z"
+  parameters:
+    OrgId:
+      name: orgId
+      in: path
+      required: true
+      schema:
+        type: string
 
-    OrganizationListResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "org_1234567890"
-        name:
-          type: string
-          example: "My Company"
-        slug:
-          type: string
-          example: "my-company"
-        description:
-          type: string
-          example: "Content management organization"
-        logo:
-          type: string
-          format: uri
-          example: "https://example.com/logo.png"
-        status:
-          type: string
-          enum: [ACTIVE, INACTIVE, SUSPENDED]
-          example: "ACTIVE"
-        role:
-          type: string
-          enum: [USER, ADMIN]
-          example: "ADMIN"
-        memberCount:
-          type: integer
-          example: 5
-        apiKeyCount:
-          type: integer
-          example: 3
-        creditBalance:
-          type: number
-          example: 150.50
-        trialEndsAt:
-          type: string
-          format: date-time
-          example: "2024-12-31T23:59:59.000Z"
-        createdAt:
-          type: string
-          format: date-time
-          example: "2024-01-01T09:00:00.000Z"
-        joinedAt:
-          type: string
-          format: date-time
-          example: "2024-01-01T09:00:00.000Z"
+    ModelId:
+      name: modelId
+      in: path
+      required: true
+      schema:
+        type: string
 
-    PaginatedOrganizationListResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: "#/components/schemas/OrganizationListResponse"
-        pagination:
-          type: object
-          properties:
-            page:
-              type: integer
-              example: 1
-            limit:
-              type: integer
-              example: 10
-            total:
-              type: integer
-              example: 25
-            totalPages:
-              type: integer
-              example: 3
+    ChatId:
+      name: chatId
+      in: path
+      required: true
+      schema:
+        type: string
 
-    # API Key Schemas
-    ApiKeyResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "key_1234567890"
-        name:
-          type: string
-          example: "Production API Key"
-        prefix:
-          type: string
-          example: "of_prod_"
-        status:
-          type: string
-          enum: [ACTIVE, DISABLED, REVOKED, EXPIRED]
-          example: "ACTIVE"
-        permissions:
-          type: object
-          description: API permissions configuration
-          example: {"read": true, "write": false}
-        rateLimit:
-          type: integer
-          example: 1000
-        createdAt:
-          type: string
-          format: date-time
-          example: "2024-01-01T09:00:00.000Z"
-        lastUsedAt:
-          type: string
-          format: date-time
-          example: "2024-01-15T14:20:00.000Z"
-        expiresAt:
-          type: string
-          format: date-time
-          example: "2024-12-31T23:59:59.000Z"
+    StartDate:
+      name: startDate
+      in: query
+      schema:
+        type: string
+        format: date
 
-    ApiKeyWithPlainKey:
-      allOf:
-        - $ref: "#/components/schemas/ApiKeyResponse"
-        - type: object
-          properties:
-            plainKey:
-              type: string
-              description: The full API key (only returned on creation)
-              example: "of_prod_1234567890abcdef1234567890abcdef"
-
-    ApiKeyListResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "key_1234567890"
-        name:
-          type: string
-          example: "Production API Key"
-        prefix:
-          type: string
-          example: "of_prod_"
-        status:
-          type: string
-          enum: [ACTIVE, DISABLED, REVOKED, EXPIRED]
-          example: "ACTIVE"
-        rateLimit:
-          type: integer
-          example: 1000
-        createdAt:
-          type: string
-          format: date-time
-          example: "2024-01-01T09:00:00.000Z"
-        lastUsedAt:
-          type: string
-          format: date-time
-          example: "2024-01-15T14:20:00.000Z"
-        expiresAt:
-          type: string
-          format: date-time
-          example: "2024-12-31T23:59:59.000Z"
-        organizationId:
-          type: string
-          example: "org_1234567890"
-
-    PaginatedApiKeyListResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: "#/components/schemas/ApiKeyListResponse"
-        pagination:
-          type: object
-          properties:
-            page:
-              type: integer
-              example: 1
-            limit:
-              type: integer
-              example: 10
-            total:
-              type: integer
-              example: 25
-            totalPages:
-              type: integer
-              example: 3
+    EndDate:
+      name: endDate
+      in: query
+      schema:
+        type: string
+        format: date
 
   responses:
     BadRequest:
@@ -1179,23 +413,25 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
 
   securitySchemes:
-    bearerAuth:
+    ApiKeyAuth:
       type: http
       scheme: bearer
-      description: Bearer token authentication (obtain via login)
+      description: Bearer token authentication
 
     XApiKeyAuth:
       type: apiKey
       in: header
       name: X-API-Key
-      description: External API key authentication (use generated API keys)
+      description: External API key authentication
 
 tags:
   - name: Organizations
-    description: Organization management, team members, and settings
-  - name: API Keys
-    description: API key creation, management, and security
+  - name: Models
+  - name: Fans
+  - name: Chats
+  - name: Payouts
+  - name: Statistics
 
 security:
-  - bearerAuth: []
+  - ApiKeyAuth: []
     XApiKeyAuth: []
