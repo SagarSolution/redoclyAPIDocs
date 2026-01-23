@@ -40,7 +40,11 @@ components:
       type: apiKey
       in: header
       name: Authorization
-
+    xApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    
   schemas:
     Organization:
       type: object
@@ -346,6 +350,7 @@ paths:
       description: Get all models for an organization
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: orgId
           in: path
@@ -373,6 +378,7 @@ paths:
       description: Connect a new OnlyFans model to an organization
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: orgId
           in: path
@@ -413,6 +419,7 @@ paths:
       description: Reconnect an existing model with new credentials
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -457,6 +464,7 @@ paths:
       description: Get detailed information about a specific fan
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -490,6 +498,7 @@ paths:
       description: Get all chat conversations for a model
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -530,6 +539,7 @@ paths:
       description: Get messages from a specific chat conversation
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -570,6 +580,7 @@ paths:
       description: Get earning transactions for a model
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -603,6 +614,7 @@ paths:
       description: Get earnings statistics for a model
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -646,6 +658,7 @@ paths:
       description: Get referral payout details for a model
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -685,6 +698,7 @@ paths:
       description: Get detailed information about a model
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -712,6 +726,7 @@ paths:
       description: Get current payout balances for a model
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -745,6 +760,7 @@ paths:
       description: Get comprehensive overview statistics for a model
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -781,6 +797,7 @@ paths:
       description: Get reach and engagement statistics for a model
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -824,6 +841,7 @@ paths:
       description: Get reach statistics broken down by country
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -872,6 +890,7 @@ paths:
       description: Get fan-related statistics for a model
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -917,6 +936,7 @@ paths:
       description: Get the top fans by spending for a model
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
