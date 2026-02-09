@@ -1,16 +1,150 @@
 openapi: 3.0.3
 info:
   title: OnlyFans API Dashboard
-  description: Multi-tenant API platform for managing OnlyFans integrations
   version: 1.0.0
-  contact:
-    name: Solution Squares
+  description: |
+    ## 🚀 Product Introduction
+
+    The OnlyFans API Dashboard is a multi-tenant API platform designed to provide secure and scalable access to OnlyFans data services.
+
+    Our platform enables developers, agencies, and automation systems to integrate OnlyFans data into their own applications through a credit-based API model.
+
+    ### 💰 Welcome Bonus
+
+    When a user creates an account in our dashboard, they automatically receive **$10 in bonus credits** in their wallet.  
+    These credits can immediately be used to test and explore our APIs.
+
+    ### ⚡ How It Works
+
+    1. Create an account in the dashboard.
+    2. Receive $10 bonus credits in your wallet.
+    3. Generate your API key.
+    4. Start calling our APIs.
+    5. Credits are deducted automatically based on API usage.
+
+    ### 📊 Credit-Based Usage Model
+
+    - Each API request consumes a defined number of credits.
+    - Credits are securely tracked using a real-time ledger system.
+    - Users can monitor:
+      - Wallet balance
+      - API usage history
+      - Transaction logs
+
+    This transparent credit system ensures predictable billing and complete usage visibility.
+
+    ---
+    For additional credits or enterprise access, please contact our sales team.
 
 tags:
   - name: Organization
-    description: 📁 Organization management endpoints
+    description: |
+      ## 🏢 Organization Setup (Required First Step)
+
+      Before using any APIs, you must create at least **one Organization**.
+
+      All API keys, credit usage, and logs are scoped to an Organization.
+      You cannot generate an API key without selecting an Organization.
+
+      ---
+
+      ### Step 1️⃣ Create an Organization
+
+      Use the following endpoint:
+
+      **POST /organizations**
+
+      This creates a new workspace where:
+      - API keys are managed
+      - Credits are stored and deducted
+      - Usage logs are tracked
+
+      #### Example Request
+      ```json
+      {
+        "name": "My Agency",
+        "description": "Main production workspace"
+      }
+      ```
+
+      ---
+
+      ### 🖼 UI Reference – Organization Selection
+
+      ![Organization UI](/images/organization.png)
+
+      After creating the Organization, it will appear in the sidebar.
+      Make sure the correct Organization is selected before proceeding.
+
+      ---
+
+      ### Step 2️⃣ Select Organization
+
+      API operations always execute within the context of the selected Organization.
+
+      If no Organization is selected:
+      - API key creation will fail
+      - Credit usage cannot be tracked
+
+      ---
+
   - name: API Keys
-    description: 📁 API key management endpoints
+    description: |
+      ## 🔑 API Key Management
+
+      Once an Organization is created and selected, you can generate API keys.
+
+      API keys are:
+      - Scoped to a single Organization
+      - Used to authenticate API requests
+      - Subject to permissions and rate limits
+
+      ---
+
+      ### Step 3️⃣ Create API Key
+
+      Use the following endpoint:
+
+      **POST /api-keys**
+
+      #### Example Request
+      ```json
+      {
+        "name": "Production App Key"
+      }
+      ```
+
+      After creation, the system returns:
+      - Key metadata
+      - `plainKey` (shown only once)
+
+      ⚠️ Store the `plainKey` securely. It will not be shown again.
+
+      ---
+
+      ## 🔐 Permission & Rate Limit Controls
+
+      When creating a key from the dashboard, you can configure:
+
+      - Read access
+      - Write access
+      - Delete access
+      - Rate limits (requests per hour)
+      - Optional expiration date
+
+      These controls help enforce fine-grained security policies.
+
+      ---
+
+      ## ⚡ Important Flow Summary
+
+      1. Create Organization
+      2. Select Organization
+      3. Create API Key
+      4. Use API key to access endpoints
+      5. Credits are deducted per request
+
+    
   - name: Models
     description: 📁 Model management endpoints
   - name: Fans
@@ -40,7 +174,11 @@ components:
       type: apiKey
       in: header
       name: Authorization
-
+    xApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    
   schemas:
     Organization:
       type: object
@@ -155,39 +293,17 @@ components:
           type: number
 
 security:
-  - bearerAuth: []
   - apiKeyAuth: []
+    xApiKeyAuth: []
 
 paths:
-  # 📁 Organization
   /organizations:
-    get:
-      tags: [Organization]
-      summary: Get organizations
-      description: Retrieve all organizations the authenticated user belongs to
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Organizations retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Organization'
-
     post:
       tags: [Organization]
-      summary: Create organizations
-      description: Create a new organization
+      summary: Create an Organization
+      description: Create a new organization workspace
       security:
-        - bearerAuth: []
+        - apiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -207,104 +323,15 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    $ref: '#/components/schemas/Organization'
+                $ref: '#/components/schemas/Organization'
 
-  /organizations/{id}:
-    get:
-      tags: [Organization]
-      summary: Get organization by ID
-      description: Retrieve a specific organization by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Organization retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    $ref: '#/components/schemas/Organization'
-
-    put:
-      tags: [Organization]
-      summary: Update organization
-      description: Update an existing organization
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                description:
-                  type: string
-      responses:
-        '200':
-          description: Organization updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    $ref: '#/components/schemas/Organization'
-
-  # 📁 API Keys
   /api-keys:
-    get:
-      tags: [API Keys]
-      summary: Get all API keys
-      description: Retrieve all API keys for the current organization
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: API keys retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ApiKey'
-
     post:
       tags: [API Keys]
-      summary: Create API keys
-      description: Create a new API key for the organization
+      summary: Create API Key
+      description: Generate a new API key for the selected organization
       security:
-        - bearerAuth: []
+        - apiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -318,30 +345,23 @@ paths:
                 - name
       responses:
         '201':
-          description: API key created successfully
+          description: API Key created successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                  data:
-                    allOf:
-                      - $ref: '#/components/schemas/ApiKey'
-                      - type: object
-                        properties:
-                          plainKey:
-                            type: string
-
+                  keyMetadata:
+                    $ref: '#/components/schemas/ApiKey'
+                  plainKey:
+                    type: string
+ 
   # 📁 Models
   /onlyfans/organizations/{orgId}/models:
     get:
       tags: [Models]
       summary: Model list
       description: Get all models for an organization
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: orgId
           in: path
@@ -367,8 +387,6 @@ paths:
       tags: [Models]
       summary: Connect models
       description: Connect a new OnlyFans model to an organization
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: orgId
           in: path
@@ -407,8 +425,6 @@ paths:
       tags: [Models]
       summary: Reconnect models
       description: Reconnect an existing model with new credentials
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -451,8 +467,6 @@ paths:
       tags: [Fans]
       summary: Get user profile
       description: Get detailed information about a specific fan
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -464,6 +478,7 @@ paths:
           required: true
           schema:
             type: string
+          example: fan_1234567890
       responses:
         '200':
           description: Fan profile retrieved successfully
@@ -483,8 +498,6 @@ paths:
       tags: [Messages]
       summary: Get all chat list
       description: Get all chat conversations for a model
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -496,11 +509,13 @@ paths:
           schema:
             type: integer
             default: 20
+          example: 20
         - name: offset
           in: query
           schema:
             type: integer
             default: 0
+          example: 0
       responses:
         '200':
           description: Chat list retrieved successfully
@@ -521,8 +536,6 @@ paths:
       tags: [Messages]
       summary: Get model-wise and chat-wise message list
       description: Get messages from a specific chat conversation
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -539,6 +552,7 @@ paths:
           schema:
             type: integer
             default: 50
+          example: 50
       responses:
         '200':
           description: Messages retrieved successfully
@@ -560,8 +574,6 @@ paths:
       tags: [Statements]
       summary: Earnings
       description: Get earning transactions for a model
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -593,8 +605,6 @@ paths:
       tags: [Statements]
       summary: Earnings statistics
       description: Get earnings statistics for a model
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -636,8 +646,6 @@ paths:
       tags: [Statements]
       summary: Referral details
       description: Get referral payout details for a model
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -675,8 +683,6 @@ paths:
       tags: [My Profile]
       summary: Get model details
       description: Get detailed information about a model
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -702,8 +708,6 @@ paths:
       tags: [Statistics]
       summary: Get balances
       description: Get current payout balances for a model
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -735,8 +739,6 @@ paths:
       tags: [Statistics]
       summary: Overview statistics
       description: Get comprehensive overview statistics for a model
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -771,8 +773,6 @@ paths:
       tags: [Statistics]
       summary: Reach statistics
       description: Get reach and engagement statistics for a model
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -816,6 +816,7 @@ paths:
       description: Get reach statistics broken down by country
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -864,6 +865,7 @@ paths:
       description: Get fan-related statistics for a model
       security:
         - apiKeyAuth: []
+        - xApiKeyAuth: []
       parameters:
         - name: modelId
           in: path
@@ -907,8 +909,6 @@ paths:
       tags: [Statistics]
       summary: Top fans list
       description: Get the top fans by spending for a model
-      security:
-        - apiKeyAuth: []
       parameters:
         - name: modelId
           in: path
